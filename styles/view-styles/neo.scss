@@ -1,0 +1,98 @@
+/* NEO view styling */
+
+
+.neo {    
+  justify-content: flex-start;
+  height: 100vh;
+}
+
+.neo-sidebar {
+  width: 300px;
+  background-color: #555555;
+}
+
+.data-fetch-header {
+  text-align: center;
+  padding: 15px 15px 10px 15px;
+  font-family: 'Cabin', sans-serif;
+    font-weight: 400;
+    font-size:24px;
+    line-height: 22px;
+    font-weight:400;
+    color: #FFFFFF;
+    text-transform: uppercase;
+}
+
+.data-vis-header {
+  text-align: center;
+  padding: 15px;
+  font-family: 'Cabin', sans-serif;
+    font-weight: 400;
+    font-size:16px;
+    line-height: 22px;
+    font-weight:400;
+    color: #FFFFFF;
+    text-transform: uppercase;
+  }
+
+.button-container {
+  padding: 5px 10px 5px 10px;
+  button {
+    font-size: 16px;
+    font-weight: 400;
+    color: #EEEEEE
+  }
+  .button-text {
+    margin: 0px 10px 0px 10px;
+  }
+}
+
+button.active {
+  opacity: 0.5;
+  border: 1px solid #EEEEEE;
+  color: #FFFFFF;
+}
+
+.neo-main {
+  background-color: #CCCCCC;
+  flex: 1;
+  font-family: 'Droid Serif', serif;
+    font-size: 14px;
+    color: #444444;
+}
+
+.chart-titles {
+  padding: 15px 40px 0px 40px;
+  justify-content: space-between;
+  .main-title {
+    font-family: 'Droid Serif', serif;
+    font-size: 20px;
+    color: #444444;
+    .big {
+      font-size: 32px;
+    }
+    .small {
+      font-size: 14px;
+    }
+  }
+}
+
+.legend-labels {
+  justify-content: space-between;
+  opacity: 0.8;
+  color: #222222;
+}
+
+.bubble-chart {
+  align-items: center;
+
+}
+
+.bubble {
+  font-family: 'Droid Serif', serif;
+  font-size: 10px;
+  color: #222222;
+  position:relative;
+  top: -70px;
+}
+

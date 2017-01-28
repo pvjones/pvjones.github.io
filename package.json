@@ -1,0 +1,33 @@
+{
+  "name": "skydash",
+  "version": "1.0.0",
+  "description": "dashboard for the skies",
+  "main": "",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pvjones/nasaViewer.git"
+  },
+  "author": "Paul V Jones",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/pvjones/nasaViewer/issues"
+  },
+  "homepage": "https://github.com/pvjones/nasaViewer#readme",
+  "dependencies": {
+    "babel-preset-es2015": "^6.22.0",
+    "d3-interpolate": "^1.1.3",
+    "d3-scale": "^1.0.4",
+    "del": "^2.2.2",
+    "gulp": "^3.9.1",
+    "gulp-babel": "^6.1.2",
+    "gulp-cachebust": "0.0.6",
+    "gulp-concat": "^2.6.1",
+    "gulp-print": "^2.0.1",
+    "gulp-sass": "^3.1.0",
+    "gulp-sourcemaps": "^2.4.0",
+    "gulp-uglify": "^2.0.1"
+  }
+}

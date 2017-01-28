@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en" ng-app="nasaViewer">
+
+  <head>
+    <meta charset="utf-8">
+    <title>skyDash</title>
+    <!-- gulp -->
+    <link rel="stylesheet" type="text/css" href="./dist/styles.css">
+    <!-- google fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Cabin:400,500,600,700|Droid+Serif:400,700" rel="stylesheet">
+  </head>
+
+  <body>
+
+    <div class="flex-col header">
+        <div class="flex-row menu">
+          <div>
+            <a ui-sref="home">home</a>
+          </div>
+          <div>
+            <a ui-sref="neo">asteroids</a>
+          </div>
+          <div>
+            <a ui-sref="apod">apod</a>
+          </div>
+          <div>
+            <a ui-sref="home({'#':'about'})">about</a>
+          </div>
+        </div>
+    </div>
+
+    <div ui-view></div>
+
+    <!-- cdn dependencies -->
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.4.2/angular-ui-router.js"></script>
+    <script src="https://use.fontawesome.com/2988cdf027.js"></script>
+    <script src="https://d3js.org/d3.v3.js"></script>
+    <!-- gulp -->
+    <script type="text/javascript" src="./dist/js/bundle.js"></script>
+
+    </body>
+
+</html>

@@ -1,0 +1,45 @@
+
+
+<div class="flex-row neo">
+
+  <div class="flex-col neo-sidebar">
+    <div class="flex-col button-box">
+      <div class="data-fetch-header">
+        <span>Choose date range to display:</span>
+      </div>
+      <div class="flex-col button-container" ng-repeat="day in weekArray">
+        <button ng-click="getNeoData(day.startDate.apiFormat, day.endDate.apiFormat); resetToggleButtons(); (day.active = !day.active); toggleTitleDisplay(day.startDate.displayFormat)" ng-class="{'active' : day.active}">
+          <span class="button-text">{{day.startDate.displayFormat}}</span> <i class="fa fa-arrow-circle-o-right" aria-hidden="true"></i> <span class="button-text">{{day.endDate.displayFormat}}</span>
+        </button>
+      </div>
+      <div class="data-vis-header">
+        <span>Choose visualization parameters:</span>
+      </div>
+    </div>
+  </div>
+  <div class="flex-col neo-main">
+    <div class="flex-row chart-titles">
+      <div class="main-title">
+        <div ng-show="showMainTitleDate">
+          <span class="big">Asteroids and NEOs</span><span class="small"> approaching Earth <br /> during the week beginning </span><span class="big">{{mainTitleDate}}</span>
+        </div>
+      </div>
+      <div class="flex-col">
+        <div>
+          <img src="./images/color-legend.png" width="150px" height="auto" />
+        </div>
+        <div class="flex-row legend-labels">
+          <div>
+            <span>Low</span>
+          </div>
+          <div>
+            <span>High</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <bubble-chart data="data" radius-selector="radiusSelector" color-selector="colorSelector" class="flex-col bubble-chart"></bubble-chart>
+  </div>
+
+
+</div>
