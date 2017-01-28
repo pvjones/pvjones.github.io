@@ -15,6 +15,64 @@
       <div class="data-vis-header">
         <span>Choose visualization parameters:</span>
       </div>
+      <div class="radio-container">
+        <div>
+          <label>Circle size:</label>
+            <div class="form-group">
+                <div class="radio">
+                    <label>
+                        <input type="radio" name="radiusSelector" value="estDiameterKm" ng-model="radiusSelector">
+                        Estimated object diameter 
+                    </label>
+                </div>
+                <div class="radio">
+                    <label>
+                        <input type="radio" name="radiusSelector" value="missDistanceKm" ng-model="radiusSelector">
+                        Closest approach
+                    </label>
+                </div>
+                <div class="radio">
+                    <label>
+                        <input type="radio" name="radiusSelector" value="relVelocityKph" ng-model="radiusSelector">
+                        Relative velocity
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div>
+          <label>Circle color:</label>
+            <div class="form-group">
+                <div class="radio">
+                    <label>
+                        <input type="radio" name="colorSelector" value="missDistanceKm" ng-model="colorSelector">
+                        Closest approach
+                    </label>
+                </div>
+                <div class="radio">
+                    <label>
+                        <input type="radio" name="colorSelector" value="relVelocityKph" ng-model="colorSelector">
+                        Relative velocity
+                    </label>
+                </div>
+                <div class="radio">
+                    <label>
+                        <input type="radio" name="colorSelector" value="estDiameterKm" ng-model="colorSelector">
+                        Estimated object diameter 
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div>
+          <label>Identify hazardous objects:</label>
+            
+          <div class="form-group">
+              <label class="checkbox-inline radio">
+                  <input type="checkbox" name="favoriteColors" ng-click="showHazard()"> Highlight red
+              </label>
+          </div>
+           
+        </div>
+      </div>
     </div>
   </div>
   <div class="flex-col neo-main">

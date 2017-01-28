@@ -390,7 +390,7 @@ body {
   text-transform: uppercase; }
 
 .button-container {
-  padding: 5px 10px 5px 10px; }
+  padding: 3px 10px 3px 10px; }
   .button-container button {
     font-size: 16px;
     font-weight: 400;
@@ -402,6 +402,17 @@ button.active {
   opacity: 0.5;
   border: 1px solid #EEEEEE;
   color: #FFFFFF; }
+
+.radio-container {
+  padding: 5px 10px 5px 10px;
+  font-family: 'Droid Serif', serif;
+  font-size: 16px;
+  color: #EEEEEE; }
+  .radio-container .form-group {
+    padding-bottom: 20px; }
+  .radio-container .radio {
+    padding-top: 5px;
+    font-size: 12px; }
 
 .neo-main {
   background-color: #CCCCCC;

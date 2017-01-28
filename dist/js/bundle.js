@@ -137,6 +137,18 @@ angular.module('nasaViewer').directive('bubbleChart', function () {
         }
       });
 
+      $scope.$watch("radiusSelector", function (n, o) {
+        if (n !== o) {
+          updateChart();
+        }
+      });
+
+      $scope.$watch("colorSelector", function (n, o) {
+        if (n !== o) {
+          updateChart();
+        }
+      });
+
       //definitions
       var diameter = 800,
           format = d3.format(",d");
@@ -146,25 +158,23 @@ angular.module('nasaViewer').directive('bubbleChart', function () {
       //create svg html element for directive and set attributes
       var svg = d3.select(elem[0]).append("svg").attr("width", diameter).attr("height", diameter).attr("class", "bubble");
 
-      //define pack
-      var packing = d3.layout.pack().sort(null).size([diameter, diameter]).value(function (d) {
-        return d.estDiameterKm; // VALUE ACCESSOR -- change this to a variable
-      }).padding(5);
-
       function updateChart() {
 
         var radiusSelector = $scope.radiusSelector;
         var colorSelector = $scope.colorSelector;
         var data = $scope.data;
+        console.log("colorSelector value", data.children[0][colorSelector]);
 
-        console.log($scope.radiusSelector);
-        console.log($scope.colorSelector);
+        //define pack
+        var packing = d3.layout.pack().sort(null).size([diameter, diameter]).value(function (d) {
+          return d[radiusSelector]; // VALUE ACCESSOR -- change this to a variable
+        }).padding(5);
 
         //color interpolation max and min
         var max, min;
         data.children.forEach(function (e) {
-          max = e.missDistanceKm * 1 < max * 1 ? max : e.missDistanceKm * 1;
-          min = e.missDistanceKm * 1 > min * 1 ? min : e.missDistanceKm * 1;
+          max = +e[colorSelector] < +max ? +max : +e[colorSelector];
+          min = +e[colorSelector] > +min ? +min : +e[colorSelector];
         });
 
         if (data && data.children.length > 0) {
@@ -182,10 +192,14 @@ angular.module('nasaViewer').directive('bubbleChart', function () {
           node.enter().append("g").classed("node", true).attr("transform", function (d) {
             return "translate(" + d.x + "," + d.y + ")";
           }).append("circle").style("fill", function (d) {
-            return colorInterpolator((d.missDistanceKm - min) / (max - min));
+            return colorInterpolator((+d[colorSelector] - +min) / (+max - +min));
           }).attr('fill-opacity', 0.7).attr('stroke', function (d) {
-            return colorInterpolator((d.missDistanceKm - min) / (max - min));
-          }).attr('stroke-width', 2);
+            return colorInterpolator((+d[colorSelector] - +min) / (+max - +min));
+          }).attr('stroke-width', 2).attr("class", function (d) {
+            if (d.isPotHazard) {
+              return "is-hazard";
+            }
+          });
 
           node.transition().attr("transform", function (d) {
             return "translate(" + d.x + "," + d.y + ")";
@@ -225,10 +239,7 @@ angular.module('nasaViewer').controller('neoContr', function ($scope, neoService
 
   $scope.viewControlObject = {
     mainTitleDate: "",
-    showMainTitleDate: false,
-
-    radiusSelector: "",
-    colorSelector: ""
+    showMainTitleDate: false
   };
 
   $scope.radiusSelector = "estDiameterKm";
@@ -243,8 +254,27 @@ angular.module('nasaViewer').controller('neoContr', function ($scope, neoService
 
     neoService.getNeoData(startDate, endDate).then(function (response) {
       $scope.data = response;
-      console.log($scope.mainTitleDate, $scope.showMainTitleDate);
     });
+  };
+
+  $scope.hideHazardToggle = true;
+
+  $scope.showHazard = function () {
+    var elements = document.getElementsByClassName("is-hazard");
+    console.log(elements);
+    if ($scope.showHazardToggle) {
+      for (var i = 0; i < elements.length; i++) {
+        if (elements[i].classList[0] == "is-hazard") {
+          elements[i].classList[1] = "show-hazard";
+          console.log(elements[i].classList[1]);
+        }
+      }
+    } else {
+      for (var _i = 0; _i < elements.length; _i++) {
+        if (elements[_i].classList[0] == "is-hazard") {}
+      }
+    }
+    $scope.showHazard = !$scope.showHazard;
   };
 });
 'use strict';

@@ -1,6 +1,6 @@
 angular.module('nasaViewer').controller('neoContr', function($scope, neoService, dateService) {
 
-  
+
   $scope.weekArray = dateService.createWeekArray(dateService.getCurrentDate(), 8);
 
   $scope.resetToggleButtons = function() {
@@ -14,9 +14,6 @@ angular.module('nasaViewer').controller('neoContr', function($scope, neoService,
   $scope.viewControlObject = {
     mainTitleDate: "",
     showMainTitleDate: false,
-
-    radiusSelector: "",
-    colorSelector: ""
   }
 
 
@@ -31,15 +28,34 @@ angular.module('nasaViewer').controller('neoContr', function($scope, neoService,
 
 
   $scope.getNeoData = function(startDate, endDate) {
-    
+
     neoService.getNeoData(startDate, endDate).then(function(response) {
       $scope.data = response;
-    console.log($scope.mainTitleDate, $scope.showMainTitleDate);
-      
     })
   }
 
-  
+  $scope.hideHazardToggle = true;
+
+  $scope.showHazard = function() {
+    var elements = document.getElementsByClassName("is-hazard");
+    console.log(elements)
+    if ($scope.showHazardToggle) {
+      for (let i = 0; i < elements.length; i++) {
+        if (elements[i].classList[0] == "is-hazard") {
+          elements[i].classList[1] = "show-hazard"
+          console.log(elements[i].classList[1])
+        }
+      }  
+    } else {
+       for (let i = 0; i < elements.length; i++) {
+        if (elements[i].classList[0] == "is-hazard") {
+          
+        }
+      }  
+      
+    }
+    $scope.showHazard = !$scope.showHazard;
+  }
 
 
 

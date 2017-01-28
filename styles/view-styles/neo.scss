@@ -36,7 +36,7 @@
   }
 
 .button-container {
-  padding: 5px 10px 5px 10px;
+  padding: 3px 10px 3px 10px;
   button {
     font-size: 16px;
     font-weight: 400;
@@ -51,6 +51,20 @@ button.active {
   opacity: 0.5;
   border: 1px solid #EEEEEE;
   color: #FFFFFF;
+}
+
+.radio-container {
+    padding: 5px 10px 5px 10px;
+    font-family: 'Droid Serif', serif;
+    font-size: 16px;
+    color: #EEEEEE;
+    .form-group {
+      padding-bottom: 20px;
+    }
+    .radio {
+      padding-top: 5px;
+      font-size: 12px;
+    }
 }
 
 .neo-main {
@@ -98,5 +112,9 @@ button.active {
   color: #222222;
   position:relative;
   top: -70px;
+}
+
+.show-hazard {
+  
 }
 
