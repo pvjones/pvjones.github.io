@@ -88,14 +88,11 @@ input, select {
 
 /* apod view styling */
 .apod {
-  min-width: 1200px;
-  width: 100vw;
-  min-height: 100vh;
+  padding-top: 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  background-color: #444444;
-  padding: 150px 0px 100px 0px; }
+  background-color: #444444; }
 
 .request-by-date {
   height: 50px;
@@ -105,22 +102,20 @@ input, select {
 
 .apod-main {
   height: 100%;
-  width: 90%;
+  width: 95%;
   font-family: 'Droid Serif', serif;
   font-size: 18px;
   line-height: 26px;
   color: #CCCCCC;
   display: flex;
+  flex-direction: row;
   justify-content: space-between; }
 
 .apod-main .photo-container {
-  width: 60%;
-  height: 100%;
   display: flex;
   flex-direction: column; }
 
 .apod-main .photo-container img {
-  width: 100%;
   height: auto;
   border: 3px solid #AAAAAA; }
 
@@ -144,7 +139,64 @@ input, select {
 .apod-main .description {
   margin-top: 50px; }
 
+/* apod view styling */
+.apod {
+  padding-top: 20px;
+  min-height: calc(100vh - 78px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #444444; }
+
+.request-by-date {
+  height: 50px;
+  width: 100%;
+  display: flex;
+  justify-content: space-between; }
+
+.apod-main {
+  height: 100%;
+  width: 95%;
+  font-family: 'Droid Serif', serif;
+  font-size: 18px;
+  line-height: 26px;
+  color: #CCCCCC;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between; }
+
+.apod-main .photo-container {
+  width: 60%;
+  height: 100%;
+  display: flex;
+  flex-direction: column; }
+
+.apod-main .photo-container img {
+  width: 100%;
+  border: 3px solid #AAAAAA; }
+
+.apod-main .info-container {
+  width: 30%;
+  height: 100%;
+  display: flex;
+  flex-direction: column; }
+
+.apod-main .title {
+  font-family: 'Cabin', sans-serif;
+  font-size: 40px;
+  line-height: 44px; }
+
+.apod-main .copyright-and-date {
+  margin-top: 15px;
+  text-transform: uppercase;
+  display: flex;
+  justify-content: space-between; }
+
+.apod-main .description {
+  margin-top: 50px; }
+
 input {
+  padding: 3px;
   text-align: center;
   background-color: #666666;
   border: 1px solid #999999;
@@ -174,7 +226,7 @@ button:hover {
 
 /* home view styling */
 .masthead {
-  height: 100vh;
+  height: calc(100vh - 78px);
   width: 100vw;
   padding: 50px;
   background-size: cover;

@@ -20,6 +20,65 @@ angular.module('nasaViewer', ['ui.router']).config(function ($stateProvider, $ur
 });
 'use strict';
 
+angular.module('nasaViewer').controller('apodContr', function ($scope, apodServ) {
+
+  $scope.apodYears = [];
+  $scope.apodMonths = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"];
+  $scope.apodDays = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31"];
+
+  for (var i = 1996; i <= new Date().getFullYear(); i++) {
+    $scope.apodYears.push(i);
+  };
+
+  $scope.apodLoaded = false;
+
+  var getCurrentApod = function getCurrentApod() {
+    apodServ.getCurrentApod().then(function (response) {
+      $scope.currentApod = response.data;
+      $scope.yyyy = '';
+      $scope.mm = '';
+      $scope.dd = '';
+      $scope.apodLoaded = true;
+    });
+  };
+
+  getCurrentApod();
+
+  $scope.getCurrentApod = getCurrentApod;
+
+  $scope.getApodByDate = function (yyyy, mm, dd) {
+    var queryDate = (yyyy + "-" + mm + "-" + dd).toString();
+    apodServ.getApodByDate(queryDate).then(function (response) {
+
+      $scope.currentApod = response.data;
+      $scope.apodLoaded = true;
+    });
+  };
+});
+'use strict';
+
+angular.module('nasaViewer').service('apodServ', function ($http) {
+
+  var apiKey = '2DGaM1ahLanQmj6wbsyHjLpe54YCodSEzsvm4cjZ';
+
+  this.getCurrentApod = function () {
+    var currentApodReq = {
+      method: 'GET',
+      url: 'https://api.nasa.gov/planetary/apod?api_key=' + apiKey
+    };
+    return $http(currentApodReq);
+  };
+
+  this.getApodByDate = function (queryDate) {
+    var dateReq = {
+      method: 'GET',
+      url: 'https://api.nasa.gov/planetary/apod?api_key=' + apiKey + "&date=" + queryDate
+    };
+    return $http(dateReq);
+  };
+});
+'use strict';
+
 angular.module('nasaViewer').factory('geolocationFact', ['$q', '$window', function ($q, $window) {
 
     'use strict';
@@ -153,65 +212,6 @@ angular.module('nasaViewer').service('weatherServ', function ($http, $sce) {
     };
 
     return $http(currentWeatherReq);
-  };
-});
-'use strict';
-
-angular.module('nasaViewer').controller('apodContr', function ($scope, apodServ) {
-
-  $scope.apodYears = [];
-  $scope.apodMonths = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"];
-  $scope.apodDays = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31"];
-
-  for (var i = 1996; i <= new Date().getFullYear(); i++) {
-    $scope.apodYears.push(i);
-  };
-
-  $scope.apodLoaded = false;
-
-  var getCurrentApod = function getCurrentApod() {
-    apodServ.getCurrentApod().then(function (response) {
-      $scope.currentApod = response.data;
-      $scope.yyyy = '';
-      $scope.mm = '';
-      $scope.dd = '';
-      $scope.apodLoaded = true;
-    });
-  };
-
-  getCurrentApod();
-
-  $scope.getCurrentApod = getCurrentApod;
-
-  $scope.getApodByDate = function (yyyy, mm, dd) {
-    var queryDate = (yyyy + "-" + mm + "-" + dd).toString();
-    apodServ.getApodByDate(queryDate).then(function (response) {
-
-      $scope.currentApod = response.data;
-      $scope.apodLoaded = true;
-    });
-  };
-});
-'use strict';
-
-angular.module('nasaViewer').service('apodServ', function ($http) {
-
-  var apiKey = '2DGaM1ahLanQmj6wbsyHjLpe54YCodSEzsvm4cjZ';
-
-  this.getCurrentApod = function () {
-    var currentApodReq = {
-      method: 'GET',
-      url: 'https://api.nasa.gov/planetary/apod?api_key=' + apiKey
-    };
-    return $http(currentApodReq);
-  };
-
-  this.getApodByDate = function (queryDate) {
-    var dateReq = {
-      method: 'GET',
-      url: 'https://api.nasa.gov/planetary/apod?api_key=' + apiKey + "&date=" + queryDate
-    };
-    return $http(dateReq);
   };
 });
 'use strict';

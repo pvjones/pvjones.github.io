@@ -3,7 +3,7 @@
 /* home view styling */
 
 .masthead {
-  height: 100vh;
+  height: calc(100vh - 78px);
   width: 100vw;
   padding: 50px;
     background-size: cover;
