@@ -414,6 +414,13 @@ button.active {
     padding-top: 5px;
     font-size: 12px; }
 
+.hazard-button-title {
+  line-height: 30px;
+  font-family: 'Cabin'; }
+
+.hazard-button button {
+  width: 30%; }
+
 .neo-main {
   background-color: #CCCCCC;
   flex: 1;
@@ -450,5 +457,9 @@ button.active {
   color: #222222;
   position: relative;
   top: -70px; }
+
+circle.show-hazard {
+  stroke: red !important;
+  stroke-width: 4px !important; }
 
 /*# sourceMappingURL=maps/styles.css.map */

@@ -62,15 +62,11 @@
                 </div>
             </div>
         </div>
-        <div>
-          <label>Identify hazardous objects:</label>
-            
-          <div class="form-group">
-              <label class="checkbox-inline radio">
-                  <input type="checkbox" name="favoriteColors" ng-click="showHazard()"> Highlight red
-              </label>
+      <div>
+        <span class="hazard-button-title">NEOs identified as hazardous</span>
+          <div class="hazard-button">
+             <button ng-click="showHazard()"> {{showHazardText}} </button>
           </div>
-           
         </div>
       </div>
     </div>

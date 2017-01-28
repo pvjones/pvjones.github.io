@@ -79,6 +79,143 @@ angular.module('nasaViewer').service('apodServ', function ($http) {
 });
 'use strict';
 
+angular.module('nasaViewer').factory('geolocationFact', ['$q', '$window', function ($q, $window) {
+
+    'use strict';
+
+    function getCurrentPosition() {
+        var deferred = $q.defer();
+
+        if (!$window.navigator.geolocation) {
+            deferred.reject('Geolocation not supported.');
+        } else {
+            $window.navigator.geolocation.getCurrentPosition(function (position) {
+                deferred.resolve(position);
+            }, function (err) {
+                deferred.reject(err);
+            });
+        }
+
+        return deferred.promise;
+    }
+
+    return {
+        getCurrentPosition: getCurrentPosition
+    };
+}]);
+'use strict';
+
+angular.module('nasaViewer').directive('liveClock', function ($interval) {
+  return {
+    scope: true, //isolates directive
+    restrict: 'E',
+    template: "<span class='live-clock-greeting'>{{greeting}}, the current time is: <br /></span><span class='live-clock-time'>{{date.now() | date: timeFormat}}</span>",
+    link: function link(scope, element, attributes) {
+
+      timeRefresh();
+
+      function timeRefresh() {
+        scope.timeFormat = attributes.format === '12' ? 'hh:mm a' : 'HH:mm';
+        scope.date = Date;
+
+        var myDate = new Date();
+        /* hour is before noon */
+        if (myDate.getHours() < 12) {
+          scope.greeting = "Good Morning";
+        } else /* Hour is from noon to 5pm (actually to 5:59 pm) */
+          if (myDate.getHours() >= 12 && myDate.getHours() <= 17) {
+            scope.greeting = "Good Afternoon";
+          } else /* the hour is after 5pm, so it is between 6pm and midnight */
+            if (myDate.getHours() > 17 && myDate.getHours() <= 24) {
+              scope.greeting = "Good Evening";;
+            } else /* the hour is not between 0 and 24, so something is wrong */{
+                scope.greeting = "Hello";
+              }
+      }
+
+      $interval(timeRefresh, 1000);
+    }
+  };
+});
+'use strict';
+
+angular.module('nasaViewer').controller('mainContr', function ($scope, apodServ, geolocationFact, weatherServ) {
+
+  //default background image (set because sometimes images[randomCount] below is evaluating undefined)
+  $scope.bgUrl = {
+    'background-image': "url('../images/home/bg-01.jpg')"
+  };
+
+  $scope.setBgImage = function () {
+    var imgCount = 4;
+    var dir = '../images/home/';
+    var randomCount = Math.round(Math.random() * (imgCount - 1)) + 1;
+    var images = ["bg-01.jpg", "bg-02.jpg", "bg-03.jpg", "bg-04.jpg"];
+
+    if (images[randomCount]) {
+      $scope.bgUrl = {
+        'background-image': "url('" + dir + images[randomCount] + "')"
+      };
+    }
+  };
+
+  //only show widgets once data is returned
+  $scope.weatherLoaded = false;
+
+  apodServ.getCurrentApod().then(function (response) {
+    $scope.currentApod = response.data;
+  });
+
+  geolocationFact.getCurrentPosition().then(function (response) {
+    var userLat = response.coords.latitude;
+    var userLong = response.coords.longitude;
+    weatherServ.getWeather(userLat, userLong).then(function (response) {
+      var weatherObj = response.data.currently;
+      $scope.cloudCover = (weatherObj.cloudCover * 100).toString().slice(0, 2);
+      $scope.weatherSummary = weatherObj.summary;
+      $scope.visibility = weatherObj.visibility;
+      $scope.temperature = weatherObj.temperature;
+      $scope.sunrise = response.data.daily.data[0].sunriseTime * 1000; //convert from unix to JS time
+      $scope.sunset = response.data.daily.data[0].sunsetTime * 1000;
+      $scope.moonPhase = response.data.daily.data[0].moonPhase;
+
+      var skyView = "";
+      if ($scope.cloudCover === 0 && $scope.visibility > 9) {
+        skyView = "excellent";
+      } else if (weatherObj.cloudCover < 0.2 && weatherObj.visibility > 8) {
+        skyView = "good";
+      } else if (weatherObj.cloudCover < 0.3 && weatherObj.visibility > 5) {
+        skyView = "fair";
+      } else if (weatherObj.cloudCover > 0.3 || weatherObj.visibility < 1) {
+        skyView = "poor";
+      } else {
+        skyView = "unknown";
+      }
+
+      $scope.skyView = skyView;
+      $scope.weatherLoaded = true;
+    });
+  });
+});
+'use strict';
+
+angular.module('nasaViewer').service('weatherServ', function ($http, $sce) {
+
+  var apiKey = "aa55d72a47da5d7d1bcabcb04ad92fdd";
+
+  this.getWeather = function (userLat, userLong) {
+    var currentWeatherURL = $sce.trustAsResourceUrl("https://api.darksky.net/forecast/" + apiKey + "/" + userLat + "," + userLong);
+
+    var currentWeatherReq = {
+      method: 'JSONP',
+      url: currentWeatherURL
+    };
+
+    return $http(currentWeatherReq);
+  };
+});
+'use strict';
+
 angular.module('nasaViewer').service('dateService', function () {
 
   this.getCurrentDate = function () {
@@ -257,24 +394,35 @@ angular.module('nasaViewer').controller('neoContr', function ($scope, neoService
     });
   };
 
-  $scope.hideHazardToggle = true;
+  // $scope.hideHazardToggle = true;
+
+  // $scope.showHazard = function() {
+  //   var elements = document.getElementsByClassName("is-hazard");
+  //   console.log(elements)
+  //   if ($scope.showHazardToggle) {
+  //     for (let i = 0; i < elements.length; i++) {
+  //       if (elements[i].classList[0] == "is-hazard") {
+  //         elements[i].classList[1] = "show-hazard"
+  //         console.log(elements[i].classList[1])
+  //       }
+  //     }  
+  //   } else {
+  //      for (let i = 0; i < elements.length; i++) {
+  //       if (elements[i].classList[0] == "is-hazard") {
+
+  //       }
+  //     }  
+
+  //   }
+
+  $scope.showHazardText = "Show";
 
   $scope.showHazard = function () {
-    var elements = document.getElementsByClassName("is-hazard");
-    console.log(elements);
-    if ($scope.showHazardToggle) {
-      for (var i = 0; i < elements.length; i++) {
-        if (elements[i].classList[0] == "is-hazard") {
-          elements[i].classList[1] = "show-hazard";
-          console.log(elements[i].classList[1]);
-        }
-      }
-    } else {
-      for (var _i = 0; _i < elements.length; _i++) {
-        if (elements[_i].classList[0] == "is-hazard") {}
-      }
-    }
-    $scope.showHazard = !$scope.showHazard;
+    var elements = document.querySelectorAll(".is-hazard");
+    elements.forEach(function (e) {
+      e.classList.toggle("show-hazard");
+      $scope.showHazardText = $scope.showHazardText === "Show" ? "Hide" : "Show";
+    });
   };
 });
 'use strict';
@@ -341,143 +489,6 @@ angular.module('nasaViewer').service('neoService', function ($http, neoDeserialS
     });
 
     return promise; //must return the promise for accessing functions
-  };
-});
-'use strict';
-
-angular.module('nasaViewer').factory('geolocationFact', ['$q', '$window', function ($q, $window) {
-
-    'use strict';
-
-    function getCurrentPosition() {
-        var deferred = $q.defer();
-
-        if (!$window.navigator.geolocation) {
-            deferred.reject('Geolocation not supported.');
-        } else {
-            $window.navigator.geolocation.getCurrentPosition(function (position) {
-                deferred.resolve(position);
-            }, function (err) {
-                deferred.reject(err);
-            });
-        }
-
-        return deferred.promise;
-    }
-
-    return {
-        getCurrentPosition: getCurrentPosition
-    };
-}]);
-'use strict';
-
-angular.module('nasaViewer').directive('liveClock', function ($interval) {
-  return {
-    scope: true, //isolates directive
-    restrict: 'E',
-    template: "<span class='live-clock-greeting'>{{greeting}}, the current time is: <br /></span><span class='live-clock-time'>{{date.now() | date: timeFormat}}</span>",
-    link: function link(scope, element, attributes) {
-
-      timeRefresh();
-
-      function timeRefresh() {
-        scope.timeFormat = attributes.format === '12' ? 'hh:mm a' : 'HH:mm';
-        scope.date = Date;
-
-        var myDate = new Date();
-        /* hour is before noon */
-        if (myDate.getHours() < 12) {
-          scope.greeting = "Good Morning";
-        } else /* Hour is from noon to 5pm (actually to 5:59 pm) */
-          if (myDate.getHours() >= 12 && myDate.getHours() <= 17) {
-            scope.greeting = "Good Afternoon";
-          } else /* the hour is after 5pm, so it is between 6pm and midnight */
-            if (myDate.getHours() > 17 && myDate.getHours() <= 24) {
-              scope.greeting = "Good Evening";;
-            } else /* the hour is not between 0 and 24, so something is wrong */{
-                scope.greeting = "Hello";
-              }
-      }
-
-      $interval(timeRefresh, 1000);
-    }
-  };
-});
-'use strict';
-
-angular.module('nasaViewer').controller('mainContr', function ($scope, apodServ, geolocationFact, weatherServ) {
-
-  //default background image (set because sometimes images[randomCount] below is evaluating undefined)
-  $scope.bgUrl = {
-    'background-image': "url('../images/home/bg-01.jpg')"
-  };
-
-  $scope.setBgImage = function () {
-    var imgCount = 4;
-    var dir = '../images/home/';
-    var randomCount = Math.round(Math.random() * (imgCount - 1)) + 1;
-    var images = ["bg-01.jpg", "bg-02.jpg", "bg-03.jpg", "bg-04.jpg"];
-
-    if (images[randomCount]) {
-      $scope.bgUrl = {
-        'background-image': "url('" + dir + images[randomCount] + "')"
-      };
-    }
-  };
-
-  //only show widgets once data is returned
-  $scope.weatherLoaded = false;
-
-  apodServ.getCurrentApod().then(function (response) {
-    $scope.currentApod = response.data;
-  });
-
-  geolocationFact.getCurrentPosition().then(function (response) {
-    var userLat = response.coords.latitude;
-    var userLong = response.coords.longitude;
-    weatherServ.getWeather(userLat, userLong).then(function (response) {
-      var weatherObj = response.data.currently;
-      $scope.cloudCover = (weatherObj.cloudCover * 100).toString().slice(0, 2);
-      $scope.weatherSummary = weatherObj.summary;
-      $scope.visibility = weatherObj.visibility;
-      $scope.temperature = weatherObj.temperature;
-      $scope.sunrise = response.data.daily.data[0].sunriseTime * 1000; //convert from unix to JS time
-      $scope.sunset = response.data.daily.data[0].sunsetTime * 1000;
-      $scope.moonPhase = response.data.daily.data[0].moonPhase;
-
-      var skyView = "";
-      if ($scope.cloudCover === 0 && $scope.visibility > 9) {
-        skyView = "excellent";
-      } else if (weatherObj.cloudCover < 0.2 && weatherObj.visibility > 8) {
-        skyView = "good";
-      } else if (weatherObj.cloudCover < 0.3 && weatherObj.visibility > 5) {
-        skyView = "fair";
-      } else if (weatherObj.cloudCover > 0.3 || weatherObj.visibility < 1) {
-        skyView = "poor";
-      } else {
-        skyView = "unknown";
-      }
-
-      $scope.skyView = skyView;
-      $scope.weatherLoaded = true;
-    });
-  });
-});
-'use strict';
-
-angular.module('nasaViewer').service('weatherServ', function ($http, $sce) {
-
-  var apiKey = "aa55d72a47da5d7d1bcabcb04ad92fdd";
-
-  this.getWeather = function (userLat, userLong) {
-    var currentWeatherURL = $sce.trustAsResourceUrl("https://api.darksky.net/forecast/" + apiKey + "/" + userLat + "," + userLong);
-
-    var currentWeatherReq = {
-      method: 'JSONP',
-      url: currentWeatherURL
-    };
-
-    return $http(currentWeatherReq);
   };
 });
 //# sourceMappingURL=bundle.js.map

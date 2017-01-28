@@ -67,6 +67,17 @@ button.active {
     }
 }
 
+.hazard-button-title {
+  line-height: 30px;
+  font-family: 'Cabin'
+}
+
+.hazard-button {
+  button {
+    width: 30%;
+  }
+}
+
 .neo-main {
   background-color: #CCCCCC;
   flex: 1;
@@ -114,7 +125,8 @@ button.active {
   top: -70px;
 }
 
-.show-hazard {
-  
+circle.show-hazard {
+  stroke: red !important;
+  stroke-width:4px !important;
 }
 
