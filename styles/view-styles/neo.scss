@@ -67,12 +67,16 @@ button.active {
   .main-title {
     font-family: 'Droid Serif', serif;
     font-size: 20px;
+    line-height: 24px;
     color: #444444;
     .big {
       font-size: 32px;
     }
     .small {
       font-size: 14px;
+    }
+    span {
+      vertical-align: middle;
     }
   }
 }

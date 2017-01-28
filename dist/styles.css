@@ -416,11 +416,14 @@ button.active {
   .chart-titles .main-title {
     font-family: 'Droid Serif', serif;
     font-size: 20px;
+    line-height: 24px;
     color: #444444; }
     .chart-titles .main-title .big {
       font-size: 32px; }
     .chart-titles .main-title .small {
       font-size: 14px; }
+    .chart-titles .main-title span {
+      vertical-align: middle; }
 
 .legend-labels {
   justify-content: space-between;
