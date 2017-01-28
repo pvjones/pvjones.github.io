@@ -223,14 +223,20 @@ angular.module('nasaViewer').controller('neoContr', function ($scope, neoService
 
   $scope.resetToggleButtons();
 
-  $scope.mainTitleDate = "";
-  $scope.showMainTitleDate = false;
+  $scope.viewControlObject = {
+    mainTitleDate: "",
+    showMainTitleDate: false,
+
+    radiusSelector: "",
+    colorSelector: ""
+  };
+
   $scope.radiusSelector = "estDiameterKm";
   $scope.colorSelector = "missDistanceKm";
 
-  $scope.toggleTitleDisplay = function (date) {
-    $scope.mainTitleDate = date;
-    $scope.showMainTitleDate = true;
+  $scope.toggleViewDisplay = function (date) {
+    $scope.viewControlObject.mainTitleDate = date;
+    $scope.viewControlObject.showMainTitleDate = true;
   };
 
   $scope.getNeoData = function (startDate, endDate) {
