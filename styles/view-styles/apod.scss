@@ -6,7 +6,6 @@
   display: flex;
     flex-direction: column;
     align-items: center;
-
   background-color: #444444;
  
 }
@@ -23,8 +22,8 @@
   width: 95%;
 
   font-family: 'Droid Serif', serif;
-    font-size: 18px;
-    line-height: 26px;
+    font-size: 16px;
+    line-height: 22px;
     color: #CCCCCC;
 
   display: flex;
@@ -60,15 +59,20 @@
 }
 
 .apod-main .copyright-and-date {
-  margin-top: 15px;
+  margin: 15px 0px;
   text-transform: uppercase;
 
   display: flex;
-    justify-content: space-between;
+  justify-content: flex-start;
+
+}
+
+.copyright-and-date .date {
+  margin-right: 20px;
 }
 
 .apod-main .description {
-  margin-top: 50px;
+  margin-top: 0px;
 }
 
 .apod-main .retrieve-apod {

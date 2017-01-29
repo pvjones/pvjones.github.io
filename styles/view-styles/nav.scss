@@ -9,6 +9,7 @@ body {
   width: 100%;
 }
 
+
 .flex-col {
   display: flex;
   flex-direction: column;
@@ -20,8 +21,7 @@ body {
 }
 
 .header {
-  background-image: linear-gradient(to right top, #8e5aad 0%, #6478c8 100%);
-  opacity: 0.8;
+  background-image: linear-gradient(to right top, #8e5aad 0%, #506ebe 100%);
   flex: 1;
 }
 
@@ -30,16 +30,16 @@ body {
   justify-content: center;
   align-items: center;
   align-content: center;
-    mask-image: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, #ffffff 50%, #ffffff 75%, rgba(255, 255, 255, 0) 100%);
+    
     box-shadow: 0 0 25px rgba(0, 0, 0, .1), inset 0 0 1px rgba(255, 255, 255, 1);
 
    div {
-    margin: 0 20px;
+    margin: 0px;
    }
 }
 
 .menu a {
-  padding: 30px;
+  padding: 25px 50px 25px 50px;
   font-family: 'Cabin';
     font-weight: 500;
     text-transform:uppercase;
@@ -52,6 +52,20 @@ body {
 
 .menu a:hover {
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1), inset 0 0 1px rgba(255, 255, 255, 0.6);
+  mask-image: linear-gradient(to right top, #8e5aad 0%, #6478c8 100%);
   color: #FFFFFF;
+}
+
+.active-menu {
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1), inset 0 0 1px rgba(255, 255, 255, 0.6);
+  color: #FFFFFF;
+}
+
+.well[ui-view]{
+ height: 65px; 
+}
+
+.ui-view-container {
+  position: relative;
 }
 

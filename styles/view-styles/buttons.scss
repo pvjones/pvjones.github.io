@@ -2,7 +2,7 @@ input {
   padding: 3px;
   text-align: center;
   background-color: #666666;
-  border: 1px solid #999999;
+  border: 1px solid #888888;
     border-radius: 2px;
   font-family: 'Cabin', sans-serif;
     font-weight: 400;
@@ -12,14 +12,14 @@ input {
 
 input:focus {
   background-color: #777777;
+  border: 1px solid #999999;
   color: #FFFFFF;
 }
 
 button {
-  
   text-align: center;
   background-color: #777777;
-  border: 1px solid #DDDDDD;
+  border: 1px solid #999999;
   border-radius: 2px;
   font-family: 'Cabin', sans-serif;
     font-weight: 400;
@@ -27,7 +27,16 @@ button {
     color: #CCCCCC;
 }
 
+button:focus {outline:0;}
+
 button:hover {
   background-color: #888888;
+  border: 1px solid #AAAAAA;
   color: #EEEEEE;
+}
+
+button.active {
+  opacity: 0.5;
+  border: 1px solid #EEEEEE;
+  color: #FFFFFF;
 }

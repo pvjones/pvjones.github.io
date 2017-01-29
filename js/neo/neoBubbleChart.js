@@ -1,4 +1,4 @@
-angular.module('nasaViewer').directive('bubbleChart', function() {
+angular.module('nasaViewer').directive('bubbleChart', ['resizeService', function(resizeService) {
     return {
       restrict: 'E',
       scope: {
@@ -7,6 +7,16 @@ angular.module('nasaViewer').directive('bubbleChart', function() {
         colorSelector: "="
       },
       link: function($scope, elem, attrs) {
+          const chartCanvas = elem[0];
+          let width = resizeService.calculateElementWidth(chartCanvas);
+          let height = resizeService.calculateElementHeight(chartCanvas);
+          let diameter = width;
+
+          window.onresize = function(event) {
+            width = resizeService.calculateElementWidth(chartCanvas);
+            height = resizeService.calculateElementHeight(chartCanvas);
+            updateChart();
+          }
 
           $scope.$watch("data", function(n, o) {
             if (n !== o) {
@@ -26,31 +36,40 @@ angular.module('nasaViewer').directive('bubbleChart', function() {
             }
           });
 
-
           //definitions
-          var diameter = 800,
-            format = d3.format(",d");
 
+          var format = d3.format(",d");
+
+          // initialize color interpolator function
           var colorInterpolator = d3.interpolateHcl("#750076", "#ffa346");
 
+          // Initialize tooltips
+          var tip = d3.tip()
+            .attr('class', 'd3-tip')
+            .html(function(d) {
+              return "<span class='tooltip-title'>NEO name:</span> <span class='tooltip-value'>" + d.neoName + "</span>" + "<br />" + "<span class='tooltip-title'>Estimated Diameter:</span> <span class='tooltip-value'>" + d.estDiameterKm.toFixed(2) + " km</span>" + "<br />" + "<span class='tooltip-title'>Closest approach:</span> <span class='tooltip-value'>" + (d.missDistanceKm / 385000).toFixed(2) + " LD</span>" + "<br />" + "<span class='tooltip-title'>Relative velocity:</span> <span class='tooltip-value'>" + ((+d.relVelocityKph).toExponential(1).toUpperCase().replace(/\+/g, "")) + " km/h</span>" + "<br />" + "<span class='tooltip-title'>Orbiting:</span> <span class='tooltip-value'>" + d.orbitBody + "</span>";
+            })
+
           //create svg html element for directive and set attributes
-          var svg = d3.select(elem[0])
+          //normally done outside update function
+          let svg = d3.select(elem[0])
             .append("svg")
-            .attr("width", diameter)
-            .attr("height", diameter)
+            .attr("width", width)
+            .attr("height", height)
             .attr("class", "bubble")
+    
+            .call(tip)
+
 
           function updateChart() {
-
             var radiusSelector = $scope.radiusSelector;
             var colorSelector = $scope.colorSelector;
             var data = $scope.data;
-            console.log("colorSelector value", data.children[0][colorSelector])
 
             //define pack
             var packing = d3.layout.pack()
               .sort(null)
-              .size([diameter, diameter])
+              .size([width, height])
               .value(function(d) {
                 return d[radiusSelector]; // VALUE ACCESSOR -- change this to a variable
               })
@@ -68,7 +87,7 @@ angular.module('nasaViewer').directive('bubbleChart', function() {
 
               var node = svg.selectAll(".node")
                 .data(packing.nodes(data)
-                  .filter(function(d) { //commenting this out gives container circle a blue background
+                  .filter(function(d) { //commenting this out gives container circle a blue background?
                     return !d.children;
                   })
                 );
@@ -83,19 +102,13 @@ angular.module('nasaViewer').directive('bubbleChart', function() {
                   return "translate(" + d.x + "," + d.y + ")";
                 })
                 .append("circle")
-                .style("fill", function(d) {
-                  return colorInterpolator((+d[colorSelector] - +min) / (+max - +min));
-                })
-                .attr('fill-opacity', 0.7)
-                .attr('stroke', function(d) {
-                  return colorInterpolator((+d[colorSelector] - +min) / (+max - +min));
-                })
-                .attr('stroke-width', 2)
                 .attr("class", function(d) {
                   if (d.isPotHazard) {
                     return "is-hazard"
                   }
                 })
+                .on('mouseover', tip.show)
+                .on('mouseout', tip.hide)
 
               node.transition()
                 .attr("transform", function(d) {
@@ -115,14 +128,26 @@ angular.module('nasaViewer').directive('bubbleChart', function() {
                 .text(function(d) {
                   return textHandler(d);
                 });
+
+              //for color redraw to work properly, it has to be part of a separate "select" function
+              node.select("circle")
+                .style("fill", function(d) {
+                  return colorInterpolator((+d[colorSelector] - +min) / (+max - +min));
+                })
+                .attr('fill-opacity', 0.7)
+                .attr('stroke', function(d) {
+                  return colorInterpolator((+d[colorSelector] - +min) / (+max - +min));
+                })
+                .attr('stroke-width', 2)
+
             } //end of if statement
           } //end of update function
           function textHandler(d) {
-            if (d.r < 30) {
+            if (d.r < 25) {
               return "";
             }
-            return d.neoName.substring(0, d.r / 2.5)
+            return d.neoName.substring(0, d.r / 2.8)
           }
         } //end of link
     } //end of return
-  }) //end of directive
+  }]) //end of directive

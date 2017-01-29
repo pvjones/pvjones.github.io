@@ -103,6 +103,22 @@ angular.module('nasaViewer').factory('geolocationFact', ['$q', '$window', functi
         getCurrentPosition: getCurrentPosition
     };
 }]);
+
+
+// $scope.navClass = 'big';
+//   angular.element($window).bind(
+//    "scroll", function() {
+//         console.log(window.pageYOffset);
+//         if (window.pageYOffset > 80) {
+//          console.log($scope.navClass)
+//           $scope.navClass = 'small-header';
+//         } 
+//         else {
+//            $scope.navClass = 'big-header';
+//         }
+//         $scope.$apply();
+//   }); 
+"use strict";
 'use strict';
 
 angular.module('nasaViewer').directive('liveClock', function ($interval) {
@@ -139,7 +155,7 @@ angular.module('nasaViewer').directive('liveClock', function ($interval) {
 });
 'use strict';
 
-angular.module('nasaViewer').controller('mainContr', function ($scope, apodServ, geolocationFact, weatherServ) {
+angular.module('nasaViewer').controller('mainContr', function ($scope, apodServ, geolocationFact, weatherServ, $window) {
 
   //default background image (set because sometimes images[randomCount] below is evaluating undefined)
   $scope.bgUrl = {
@@ -258,7 +274,7 @@ angular.module('nasaViewer').service('dateService', function () {
 });
 'use strict';
 
-angular.module('nasaViewer').directive('bubbleChart', function () {
+angular.module('nasaViewer').directive('bubbleChart', ['resizeService', function (resizeService) {
   return {
     restrict: 'E',
     scope: {
@@ -267,6 +283,16 @@ angular.module('nasaViewer').directive('bubbleChart', function () {
       colorSelector: "="
     },
     link: function link($scope, elem, attrs) {
+      var chartCanvas = elem[0];
+      var width = resizeService.calculateElementWidth(chartCanvas);
+      var height = resizeService.calculateElementHeight(chartCanvas);
+      var diameter = width;
+
+      window.onresize = function (event) {
+        width = resizeService.calculateElementWidth(chartCanvas);
+        height = resizeService.calculateElementHeight(chartCanvas);
+        updateChart();
+      };
 
       $scope.$watch("data", function (n, o) {
         if (n !== o) {
@@ -287,23 +313,28 @@ angular.module('nasaViewer').directive('bubbleChart', function () {
       });
 
       //definitions
-      var diameter = 800,
-          format = d3.format(",d");
 
+      var format = d3.format(",d");
+
+      // initialize color interpolator function
       var colorInterpolator = d3.interpolateHcl("#750076", "#ffa346");
 
+      // Initialize tooltips
+      var tip = d3.tip().attr('class', 'd3-tip').html(function (d) {
+        return "<span class='tooltip-title'>NEO name:</span> <span class='tooltip-value'>" + d.neoName + "</span>" + "<br />" + "<span class='tooltip-title'>Estimated Diameter:</span> <span class='tooltip-value'>" + d.estDiameterKm.toFixed(2) + " km</span>" + "<br />" + "<span class='tooltip-title'>Closest approach:</span> <span class='tooltip-value'>" + (d.missDistanceKm / 385000).toFixed(2) + " LD</span>" + "<br />" + "<span class='tooltip-title'>Relative velocity:</span> <span class='tooltip-value'>" + (+d.relVelocityKph).toExponential(1).toUpperCase().replace(/\+/g, "") + " km/h</span>" + "<br />" + "<span class='tooltip-title'>Orbiting:</span> <span class='tooltip-value'>" + d.orbitBody + "</span>";
+      });
+
       //create svg html element for directive and set attributes
-      var svg = d3.select(elem[0]).append("svg").attr("width", diameter).attr("height", diameter).attr("class", "bubble");
+      //normally done outside update function
+      var svg = d3.select(elem[0]).append("svg").attr("width", width).attr("height", height).attr("class", "bubble").call(tip);
 
       function updateChart() {
-
         var radiusSelector = $scope.radiusSelector;
         var colorSelector = $scope.colorSelector;
         var data = $scope.data;
-        console.log("colorSelector value", data.children[0][colorSelector]);
 
         //define pack
-        var packing = d3.layout.pack().sort(null).size([diameter, diameter]).value(function (d) {
+        var packing = d3.layout.pack().sort(null).size([width, height]).value(function (d) {
           return d[radiusSelector]; // VALUE ACCESSOR -- change this to a variable
         }).padding(5);
 
@@ -318,7 +349,7 @@ angular.module('nasaViewer').directive('bubbleChart', function () {
           packing.radius();
 
           var node = svg.selectAll(".node").data(packing.nodes(data).filter(function (d) {
-            //commenting this out gives container circle a blue background
+            //commenting this out gives container circle a blue background?
             return !d.children;
           }));
 
@@ -328,15 +359,11 @@ angular.module('nasaViewer').directive('bubbleChart', function () {
 
           node.enter().append("g").classed("node", true).attr("transform", function (d) {
             return "translate(" + d.x + "," + d.y + ")";
-          }).append("circle").style("fill", function (d) {
-            return colorInterpolator((+d[colorSelector] - +min) / (+max - +min));
-          }).attr('fill-opacity', 0.7).attr('stroke', function (d) {
-            return colorInterpolator((+d[colorSelector] - +min) / (+max - +min));
-          }).attr('stroke-width', 2).attr("class", function (d) {
+          }).append("circle").attr("class", function (d) {
             if (d.isPotHazard) {
               return "is-hazard";
             }
-          });
+          }).on('mouseover', tip.show).on('mouseout', tip.hide);
 
           node.transition().attr("transform", function (d) {
             return "translate(" + d.x + "," + d.y + ")";
@@ -349,20 +376,27 @@ angular.module('nasaViewer').directive('bubbleChart', function () {
           node.append("text").attr("dy", ".3em").style("text-anchor", "middle").style("pointer-events", "none").text(function (d) {
             return textHandler(d);
           });
+
+          //for color redraw to work properly, it has to be part of a separate "select" function
+          node.select("circle").style("fill", function (d) {
+            return colorInterpolator((+d[colorSelector] - +min) / (+max - +min));
+          }).attr('fill-opacity', 0.7).attr('stroke', function (d) {
+            return colorInterpolator((+d[colorSelector] - +min) / (+max - +min));
+          }).attr('stroke-width', 2);
         } //end of if statement
       } //end of update function
       function textHandler(d) {
-        if (d.r < 30) {
+        if (d.r < 25) {
           return "";
         }
-        return d.neoName.substring(0, d.r / 2.5);
+        return d.neoName.substring(0, d.r / 2.8);
       }
     } //end of link
   }; //end of return
-}); //end of directive
+}]); //end of directive
 'use strict';
 
-angular.module('nasaViewer').controller('neoContr', function ($scope, neoService, dateService) {
+angular.module('nasaViewer').controller('neoContr', function ($scope, neoService, dateService, $timeout) {
 
   $scope.weekArray = dateService.createWeekArray(dateService.getCurrentDate(), 8);
 
@@ -373,6 +407,25 @@ angular.module('nasaViewer').controller('neoContr', function ($scope, neoService
   };
 
   $scope.resetToggleButtons();
+
+  $scope.getNeoData = function (startDate, endDate) {
+    neoService.getNeoData(startDate, endDate).then(function (response) {
+      $scope.data = response;
+      calculateWeekStats(response);
+    });
+  };
+
+  $scope.stats = {
+    missDistanceKm: {
+      label: "Closest Approach (LD)"
+    },
+    relVelocityKph: {
+      label: "Relative Velocity (km/h)"
+    },
+    estDiameterKm: {
+      label: "Estimated Diameter (km)"
+    }
+  };
 
   $scope.viewControlObject = {
     mainTitleDate: "",
@@ -387,43 +440,89 @@ angular.module('nasaViewer').controller('neoContr', function ($scope, neoService
     $scope.viewControlObject.showMainTitleDate = true;
   };
 
-  $scope.getNeoData = function (startDate, endDate) {
-
-    neoService.getNeoData(startDate, endDate).then(function (response) {
-      $scope.data = response;
-    });
-  };
-
-  // $scope.hideHazardToggle = true;
-
-  // $scope.showHazard = function() {
-  //   var elements = document.getElementsByClassName("is-hazard");
-  //   console.log(elements)
-  //   if ($scope.showHazardToggle) {
-  //     for (let i = 0; i < elements.length; i++) {
-  //       if (elements[i].classList[0] == "is-hazard") {
-  //         elements[i].classList[1] = "show-hazard"
-  //         console.log(elements[i].classList[1])
-  //       }
-  //     }  
-  //   } else {
-  //      for (let i = 0; i < elements.length; i++) {
-  //       if (elements[i].classList[0] == "is-hazard") {
-
-  //       }
-  //     }  
-
-  //   }
-
   $scope.showHazardText = "Show";
 
   $scope.showHazard = function () {
-    var elements = document.querySelectorAll(".is-hazard");
-    elements.forEach(function (e) {
+    var hazardElements = document.querySelectorAll(".is-hazard");
+    var notHazardElements = document.querySelectorAll("circle:not(.is-hazard)");
+
+    hazardElements.forEach(function (e) {
       e.classList.toggle("show-hazard");
-      $scope.showHazardText = $scope.showHazardText === "Show" ? "Hide" : "Show";
     });
+
+    notHazardElements.forEach(function (e) {
+      e.classList.toggle("show-not-hazard");
+    });
+
+    $scope.showHazardText = $scope.showHazardText === "Show" ? "Hide" : "Show";
   };
+
+  function calculateWeekStats(data) {
+    if (data) {
+      (function () {
+        var dataArray = data.children;
+        var distanceValues = [];
+        var velocityValues = [];
+        var diameterValues = [];
+        dataArray.forEach(function (e) {
+          distanceValues.push(+e.missDistanceKm);
+          velocityValues.push(+e.relVelocityKph);
+          diameterValues.push(+e.estDiameterKm);
+        });
+
+        $scope.stats.missDistanceKm.values = distanceValues;
+        var maxDistance = distanceValues.reduce(function (prev, curr) {
+          return prev > curr ? prev : curr;
+        });
+        $scope.stats.missDistanceKm.max = (maxDistance / 385000).toFixed(1);
+        var minDistance = distanceValues.reduce(function (prev, curr) {
+          return prev < curr ? prev : curr;
+        });
+        $scope.stats.missDistanceKm.min = (minDistance / 385000).toFixed(1);
+        var meanDistance = distanceValues.reduce(function (prev, curr) {
+          return prev + curr;
+        }) / distanceValues.length;
+        $scope.stats.missDistanceKm.mean = (meanDistance / 385000).toFixed(1);
+
+        $scope.stats.relVelocityKph.values = velocityValues;
+        var maxVelocity = velocityValues.reduce(function (prev, curr) {
+          return prev > curr ? prev : curr;
+        });
+        $scope.stats.relVelocityKph.max = maxVelocity.toExponential(1).toUpperCase().replace(/\+/g, "");
+        var minVelocity = velocityValues.reduce(function (prev, curr) {
+          return prev < curr ? prev : curr;
+        });
+        $scope.stats.relVelocityKph.min = minVelocity.toExponential(1).toUpperCase().replace(/\+/g, "");
+        var meanVelocity = velocityValues.reduce(function (prev, curr) {
+          return prev + curr;
+        }) / velocityValues.length;
+        $scope.stats.relVelocityKph.mean = meanVelocity.toExponential(1).toUpperCase().replace(/\+/g, "");
+
+        $scope.stats.estDiameterKm.values = diameterValues;
+        var maxDiameter = diameterValues.reduce(function (prev, curr) {
+          return prev > curr ? prev : curr;
+        });
+        $scope.stats.estDiameterKm.max = maxDiameter.toFixed(2);
+        var minDiameter = diameterValues.reduce(function (prev, curr) {
+          return prev < curr ? prev : curr;
+        });
+        $scope.stats.estDiameterKm.min = minDiameter.toFixed(2);
+        var meanDiameter = diameterValues.reduce(function (prev, curr) {
+          return prev + curr;
+        }) / diameterValues.length;
+        $scope.stats.estDiameterKm.mean = meanDiameter.toFixed(2);
+
+        console.log($scope.stats);
+        console.log($scope.stats[$scope.colorSelector]);
+      })();
+    }
+  }
+
+  window.onload = $timeout(function () {
+    $scope.viewControlObject.mainTitleDate = $scope.weekArray[0].startDate.displayFormat;
+    $scope.viewControlObject.showMainTitleDate = true;
+    $scope.getNeoData($scope.weekArray[0].startDate.apiFormat, $scope.weekArray[0].endDate.apiFormat);
+  }, 500);
 });
 'use strict';
 
@@ -489,6 +588,38 @@ angular.module('nasaViewer').service('neoService', function ($http, neoDeserialS
     });
 
     return promise; //must return the promise for accessing functions
+  };
+});
+'use strict';
+
+angular.module('nasaViewer').service('resizeService', function () {
+
+  this.calculateElementWidth = function (element) {
+    if (!element.offsetWidth) {
+      return 0;
+    }
+
+    var style = window.getComputedStyle(element);
+    var width = element.offsetWidth;
+    var margin = parseFloat(style.marginLeft) + parseFloat(style.marginRight);
+    var padding = parseFloat(style.paddingLeft) + parseFloat(style.paddingRight);
+    var border = parseFloat(style.borderLeftWidth) + parseFloat(style.borderRightWidth);
+
+    return width;
+  };
+
+  this.calculateElementHeight = function (element) {
+    if (!element.offsetHeight) {
+      return 0;
+    }
+
+    var style = window.getComputedStyle(element);
+    var height = element.offsetHeight;
+    var margin = parseFloat(style.marginTop) + parseFloat(style.marginBottom);
+    var padding = parseFloat(style.paddingTop) + parseFloat(style.paddingBottom);
+    var border = parseFloat(style.borderTopWidth) + parseFloat(style.borderBottomWidth);
+
+    return height;
   };
 });
 //# sourceMappingURL=bundle.js.map

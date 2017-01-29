@@ -1,9 +1,14 @@
-angular.module('nasaViewer').controller('mainContr', function($scope, apodServ, geolocationFact, weatherServ) {
+angular.module('nasaViewer').controller('mainContr', function($scope, apodServ, geolocationFact, weatherServ, $window) {
 
   //default background image (set because sometimes images[randomCount] below is evaluating undefined)
   $scope.bgUrl = {
     'background-image': "url('../images/home/bg-01.jpg')"
   }
+
+
+  
+
+
 
   $scope.setBgImage = function() {
     var imgCount = 4;

@@ -6,7 +6,6 @@
       <span>LOADING...</span>
     </div>
     <div class="photo-container" ng-show="apodLoaded">
-
       <div class="request-by-date">
         <div>
           <form>
@@ -21,32 +20,28 @@
           <button class="current-apod" ng-click="getCurrentApod()" ng-init="getCurrentApod()">TODAY'S APOD</button>
         </div>
       </div>
-
       <img ng-src="{{currentApod.url}}" />
     </div>
-
     <div class="info-container">
       <div class="title">
         <p>{{currentApod.title}}</p>
       </div>
       <div class="copyright-and-date">
-        <div class="copyright">
-          <p>{{currentApod.copyright}}</p>
-        </div>
         <div class="date">
           <p>{{currentApod.date}}</p>
+        </div>
+        <div class="copyright">
+          <p>{{currentApod.copyright}}asdf</p>
         </div>
       </div>
       <div class="description">
         {{currentApod.explanation}}
       </div>
     </div>
-
     <div class="retrieve-apod">
       <div class="button">
       </div>
     </div>
-
   
   </div>
 
