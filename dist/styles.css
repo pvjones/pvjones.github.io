@@ -142,7 +142,7 @@ input, select {
 /* apod view styling */
 .apod {
   padding-top: 20px;
-  min-height: calc(100vh - 78px);
+  min-height: calc(100vh - 68px);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -214,6 +214,9 @@ input:focus {
   border: 1px solid #999999;
   color: #FFFFFF; }
 
+.button-container {
+  min-height: 26px; }
+
 button {
   text-align: center;
   background-color: #777777;
@@ -244,7 +247,7 @@ button.active {
 
 /* home view styling */
 .masthead {
-  height: calc(100vh - 78px);
+  height: calc(100vh - 68px);
   width: 100vw;
   padding: 50px;
   background-size: cover;
@@ -337,7 +340,8 @@ button.active {
 
 body {
   height: 100%;
-  width: 100%; }
+  width: 100%;
+  min-width: 1100px; }
 
 .flex-col {
   display: flex;
@@ -499,6 +503,10 @@ body {
   font-weight: 300;
   color: #dc283c; }
 
+.explanation {
+  width: 100px;
+  margin-bottom: 15px; }
+
 .right-info-bar {
   height: 100%;
   position: absolute;
@@ -569,6 +577,9 @@ body {
   color: #222222;
   width: 100%;
   height: 100%; }
+
+circle {
+  fill: radial-gradient(circle at 100px 100px, #5cabff, #000); }
 
 circle:hover {
   fill-opacity: 0.9; }

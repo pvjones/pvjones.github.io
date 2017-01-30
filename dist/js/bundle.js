@@ -198,9 +198,9 @@ angular.module('nasaViewer').controller('mainContr', function ($scope, apodServ,
       var skyView = "";
       if ($scope.cloudCover === 0 && $scope.visibility > 9) {
         skyView = "excellent";
-      } else if (weatherObj.cloudCover < 0.2 && weatherObj.visibility > 8) {
+      } else if (weatherObj.cloudCover < 0.1 && weatherObj.visibility > 7) {
         skyView = "good";
-      } else if (weatherObj.cloudCover < 0.3 && weatherObj.visibility > 5) {
+      } else if (weatherObj.cloudCover < 0.2 && weatherObj.visibility > 5) {
         skyView = "fair";
       } else if (weatherObj.cloudCover > 0.3 || weatherObj.visibility < 1) {
         skyView = "poor";
@@ -333,7 +333,7 @@ angular.module('nasaViewer').directive('bubbleChart', ['resizeService', function
         var colorSelector = $scope.colorSelector;
         var data = $scope.data;
 
-        //define pack
+        //define parameters for the parent packing container
         var packing = d3.layout.pack().sort(null).size([width, height]).value(function (d) {
           return d[radiusSelector]; // VALUE ACCESSOR -- change this to a variable
         }).padding(5);
@@ -348,8 +348,8 @@ angular.module('nasaViewer').directive('bubbleChart', ['resizeService', function
         if (data && data.children.length > 0) {
           packing.radius();
 
+          //Select all nodes and bind data that will determine node svg shape and size -- data needs to be a very specific format (in this case, obj.children where children is an array of objects. convert data to this format if necessary, and use a function below to return the 
           var node = svg.selectAll(".node").data(packing.nodes(data).filter(function (d) {
-            //commenting this out gives container circle a blue background?
             return !d.children;
           }));
 

@@ -51,9 +51,9 @@ angular.module('nasaViewer').controller('mainContr', function($scope, apodServ, 
       var skyView = ""
       if ($scope.cloudCover === 0 && $scope.visibility > 9) {
         skyView = "excellent";
-      } else if (weatherObj.cloudCover < 0.2 && weatherObj.visibility > 8) {
+      } else if (weatherObj.cloudCover < 0.1 && weatherObj.visibility > 7) {
         skyView = "good";
-      } else if (weatherObj.cloudCover < 0.3 && weatherObj.visibility > 5) {
+      } else if (weatherObj.cloudCover < 0.2 && weatherObj.visibility > 5) {
         skyView = "fair";
       } else if (weatherObj.cloudCover > 0.3 || weatherObj.visibility < 1) {
         skyView = "poor";
