@@ -33,6 +33,7 @@
 
 .apod-main .photo-container {
   width: 60%;
+  max-width: 700px;
   height: 100%;
 
   display: flex;
@@ -41,6 +42,7 @@
 
 .apod-main .photo-container img {
   width: 100%;
+  height: auto;
   border: 3px solid #AAAAAA;
 }
 
