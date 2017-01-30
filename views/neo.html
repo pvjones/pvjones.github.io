@@ -18,8 +18,8 @@
           </div>
         </button>
       </div>
-      <div class="flex-col button-container">
-        <button ng-click="autoLoop()" ng-class="{'active': autoLoopLabel !== 'Play week loop'}">{{autoLoopLabel}}</button>
+      <div class="flex-col button-container auto-loop-button">
+        <button ng-click="autoLoopLabel !== 'Play week loop' || autoLoop()" ng-class="{'active': autoLoopLabel !== 'Play week loop'}">{{autoLoopLabel}}</button>
       </div>
         <div class="data-vis-container">
           <div class="data-vis-header">

@@ -1,4 +1,4 @@
-angular.module('nasaViewer').controller('neoContr', function($scope, neoService, dateService, $timeout) {
+angular.module('nasaViewer').controller('neoContr', function($scope, $rootScope, neoService, dateService, $timeout) {
 
   $scope.weekArray = dateService.createWeekArray(dateService.getCurrentDate(), 8);
 
@@ -156,13 +156,21 @@ angular.module('nasaViewer').controller('neoContr', function($scope, neoService,
     }
   }
 
-  window.onload = function() {
+ $scope.$on('$viewContentLoaded', function() {
     $scope.viewControlObject.mainTitleDate = $scope.weekArray[0].startDate.displayFormat;
     console.log($scope.weekArray)
     $scope.viewControlObject.showMainTitleDate = true;
     $scope.getNeoData($scope.weekArray[0].startDate.apiFormat, $scope.weekArray[0].endDate.apiFormat);
     $scope.weekArray[0].active = true;
-  };
+  });
+
+  // window.onload = function() {
+  //   $scope.viewControlObject.mainTitleDate = $scope.weekArray[0].startDate.displayFormat;
+  //   console.log($scope.weekArray)
+  //   $scope.viewControlObject.showMainTitleDate = true;
+  //   $scope.getNeoData($scope.weekArray[0].startDate.apiFormat, $scope.weekArray[0].endDate.apiFormat);
+  //   $scope.weekArray[0].active = true;
+  // };
 
 
 });

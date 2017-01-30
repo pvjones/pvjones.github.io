@@ -238,6 +238,10 @@ button.active {
   border: 1px solid #AAAAAA;
   color: #FFFFFF; }
 
+.auto-loop-button button {
+  text-transform: uppercase;
+  color: #FFFFFF; }
+
 /* home view styling */
 .masthead {
   height: calc(100vh - 78px);
