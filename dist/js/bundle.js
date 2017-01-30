@@ -511,18 +511,54 @@ angular.module('nasaViewer').controller('neoContr', function ($scope, neoService
           return prev + curr;
         }) / diameterValues.length;
         $scope.stats.estDiameterKm.mean = meanDiameter.toFixed(2);
-
-        console.log($scope.stats);
-        console.log($scope.stats[$scope.colorSelector]);
       })();
     }
   }
 
-  window.onload = $timeout(function () {
+  $scope.autoLoopLabel = "Play week loop";
+
+  $scope.autoLoop = function () {
+
+    for (var i = 0; i <= $scope.weekArray.length; i++) {
+      var timeOutGetter = function timeOutGetter(i) {
+        $scope.autoLoopLabel = "Playing loop...";
+
+        if (i < $scope.weekArray.length) {
+          var startDate = $scope.weekArray[i].startDate.apiFormat;
+          var endDate = $scope.weekArray[i].endDate.apiFormat;
+
+          return function () {
+            $scope.getNeoData(startDate, endDate);
+            for (var j = 0; j < $scope.weekArray.length; j++) {
+              $scope.weekArray[j].active = false;
+            }
+            $scope.weekArray[i].active = true;
+            $scope.viewControlObject.mainTitleDate = $scope.weekArray[i].startDate.displayFormat;
+          };
+        } else if (i = $scope.weekArray.length) {
+          return function () {
+            $scope.viewControlObject.mainTitleDate = $scope.weekArray[0].startDate.displayFormat;
+            $scope.getNeoData($scope.weekArray[0].startDate.apiFormat, $scope.weekArray[0].endDate.apiFormat);
+            for (var j = 0; j < $scope.weekArray.length; j++) {
+              $scope.weekArray[j].active = false;
+            }
+            $scope.weekArray[0].active = true;
+            $scope.autoLoopLabel = "Play week loop";
+          };
+        }
+      };
+
+      $timeout(timeOutGetter(i), 4000 * i);
+    }
+  };
+
+  window.onload = function () {
     $scope.viewControlObject.mainTitleDate = $scope.weekArray[0].startDate.displayFormat;
+    console.log($scope.weekArray);
     $scope.viewControlObject.showMainTitleDate = true;
     $scope.getNeoData($scope.weekArray[0].startDate.apiFormat, $scope.weekArray[0].endDate.apiFormat);
-  }, 500);
+    $scope.weekArray[0].active = true;
+  };
 });
 'use strict';
 

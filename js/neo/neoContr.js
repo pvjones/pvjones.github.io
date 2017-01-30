@@ -17,6 +17,7 @@ angular.module('nasaViewer').controller('neoContr', function($scope, neoService,
     })
   }
 
+
   $scope.stats = {
     missDistanceKm: {
       label: "Closest Approach (LD)",
@@ -112,20 +113,56 @@ angular.module('nasaViewer').controller('neoContr', function($scope, neoService,
         return (prev + curr);
       }) / diameterValues.length;
       $scope.stats.estDiameterKm.mean = meanDiameter.toFixed(2)
-    
-      console.log($scope.stats)
-      console.log($scope.stats[$scope.colorSelector])
 
     }
   }
 
+  $scope.autoLoopLabel = "Play week loop";
 
+  $scope.autoLoop = function() {
 
-  window.onload = $timeout(function() {
+    for (let i = 0; i <= $scope.weekArray.length; i++) {
+
+      $timeout(timeOutGetter(i), 4000 * (i))
+
+      function timeOutGetter(i) {
+        $scope.autoLoopLabel = "Playing loop..."
+
+        if (i < $scope.weekArray.length) {
+          var startDate = $scope.weekArray[i].startDate.apiFormat;
+          var endDate = $scope.weekArray[i].endDate.apiFormat;
+
+          return function() {
+            $scope.getNeoData(startDate, endDate);
+            for (let j = 0; j < $scope.weekArray.length; j++) {
+              $scope.weekArray[j].active = false;
+            }
+            $scope.weekArray[i].active = true;
+            $scope.viewControlObject.mainTitleDate = $scope.weekArray[i].startDate.displayFormat;
+          }
+
+        } else if (i = $scope.weekArray.length) {
+          return function() {
+            $scope.viewControlObject.mainTitleDate = $scope.weekArray[0].startDate.displayFormat;
+            $scope.getNeoData($scope.weekArray[0].startDate.apiFormat, $scope.weekArray[0].endDate.apiFormat);
+            for (let j = 0; j < $scope.weekArray.length; j++) {
+              $scope.weekArray[j].active = false;
+            }
+            $scope.weekArray[0].active = true;
+            $scope.autoLoopLabel = "Play week loop";
+          }
+        }
+      }
+    }
+  }
+
+  window.onload = function() {
     $scope.viewControlObject.mainTitleDate = $scope.weekArray[0].startDate.displayFormat;
+    console.log($scope.weekArray)
     $scope.viewControlObject.showMainTitleDate = true;
     $scope.getNeoData($scope.weekArray[0].startDate.apiFormat, $scope.weekArray[0].endDate.apiFormat);
-  }, 500);
+    $scope.weekArray[0].active = true;
+  };
 
 
 });

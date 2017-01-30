@@ -18,6 +18,9 @@
           </div>
         </button>
       </div>
+      <div class="flex-col button-container">
+        <button ng-click="autoLoop()" ng-class="{'active': autoLoopLabel !== 'Play week loop'}">{{autoLoopLabel}}</button>
+      </div>
         <div class="data-vis-container">
           <div class="data-vis-header">
             <span>Choose visualization parameters:</span>
@@ -93,9 +96,9 @@
           <span>Potentially Hazardous <br />Asteroids (PHAs)</span>
         </div>
         <div>
-          <p>NASA designates objects as PHAs when they will pass within 0.05 AU (roughly 7,480,000 km or 4,650,000 mi) and are larger than 150 m in diameter.</p>
+          <p>Objects are designated as PHAs when they will pass within 0.05 AU (roughly 7,480,000 km) and are larger than 150 m in diameter.</p>
           <p>There are currently 1767 known PHAs.</p>
-          <p>This does not mean a PHA will impact the Earth. It only means there is a slight possibility for such a threat. By monitoring PHAs and updating their data NASA can better predict the close-approach statistics and thus their Earth-impact threat.</p>
+          <p>This does not mean a PHA will impact the Earth. It means there is a very slight possibility for such a threat. By monitoring PHAs NASA can better predict their orbits and thus their Earth-impact threat.</p>
         </div>
       </div>
     </div>
