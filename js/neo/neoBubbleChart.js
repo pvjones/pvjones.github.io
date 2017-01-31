@@ -57,8 +57,8 @@ angular.module('nasaViewer').directive('bubbleChart', ['resizeService', function
             .attr("width", width)
             .attr("height", height)
             .attr("class", "bubble")
-    
-            .call(tip)
+
+          .call(tip)
 
 
           function updateChart() {
@@ -88,7 +88,7 @@ angular.module('nasaViewer').directive('bubbleChart', ['resizeService', function
               //Select all nodes and bind data that will determine node svg shape and size -- data needs to be a very specific format (in this case, obj.children where children is an array of objects. convert data to this format if necessary, and use a function below to return the 
               var node = svg.selectAll(".node")
                 .data(packing.nodes(data)
-                  .filter(function(d) {
+                  .filter(function(d) { //commenting this out gives container circle a blue background?
                     return !d.children;
                   })
                 );
